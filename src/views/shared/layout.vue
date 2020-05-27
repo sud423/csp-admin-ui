@@ -21,40 +21,7 @@
           @click="() => (collapsed = !collapsed)"
         />
 
-        <div style="float:right;">
-          <a-dropdown
-            class="header-item"
-            style="display: inline-block; height: 100%; vertical-align: initial"
-          >
-            <span style="cursor: pointer">
-              <a-avatar
-                style="margin: 20px 4px 20px 0;color: #1890ff;background: hsla(0, 0%, 100%, 0.85);"
-                size="small"
-                shape="circle"
-                icon="user"
-              />
-              <!--:src="currUser.avatar"-->
-              <span>susd</span>
-            </span>
-            <a-menu style="width: 150px" slot="overlay">
-              <a-menu-item>
-                <a-icon type="user" />
-                <span>个人中心</span>
-              </a-menu-item>
-              <a-menu-item>
-                <a-icon type="setting" />
-                <span>设置</span>
-              </a-menu-item>
-              <a-menu-divider />
-              <a-menu-item>
-                <router-link to="/login">
-                  <a-icon type="poweroff" />
-                  <span>退出登录</span>
-                </router-link>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>
-        </div>
+        <Header/>
       </a-layout-header>
       <a-layout-content>
         <div class="breadcrumb">
@@ -86,13 +53,14 @@
 import enquireScreen from "../../utils/device";
 
 import SiderMenu from "../../components/layout/SiderMenu";
+import Header from "../../components/layout/Header";
 
 const minHeight = window.innerHeight - 211;
 let menuData = [];
 
 export default {
-  name: "App",
-  components: { SiderMenu },
+  name: "Layout",
+  components: { SiderMenu, Header },
   data() {
     return {
       minHeight: minHeight + "px",
@@ -148,17 +116,6 @@ export default {
   color: #1890ff;
 }
 
-.header-item {
-  padding: 0 12px;
-  display: inline-block;
-  height: 100%;
-  cursor: pointer;
-  vertical-align: middle;
-  i {
-    font-size: 16px;
-    color: rgba(0, 0, 0, 0.65);
-  }
-}
 .breadcrumb {
   margin-bottom: 20px;
   background: #fff;

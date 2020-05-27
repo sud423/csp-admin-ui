@@ -1,11 +1,23 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import PouchDB from 'pouchdb'
 
 import dashboard from '../views/dashboard'
 import Login from '../views/login'
 import layout from '../views/shared/layout'
 
 Vue.use(Router)
+
+function guard(to, from, next) {
+
+  var db = new PouchDB('admindb')
+  db.get('currUser').catch(e => {
+    if (e.status == 404 && to.path != '/login') {
+      next('/login');
+    }
+  });
+  // next();
+}
 
 export default new Router({
   linkActiveClass: 'active',
@@ -17,6 +29,7 @@ export default new Router({
   }, {
     path: '/',
     name: '首页',
+    beforeEnter: guard,
     component: layout,
     redirect: '/dashboard',
     icon: 'none',

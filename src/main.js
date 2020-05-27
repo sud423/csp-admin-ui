@@ -7,32 +7,32 @@ import Antd from 'ant-design-vue'
 // import axios from 'axios'
 // import '@/mock'
 import store from './store'
-import PouchDB from 'pouchdb'
+// import PouchDB from 'pouchdb'
 
 Vue.config.productionTip = false
 
 Vue.use(Antd)
 
 
-router.beforeEach((to, from, next) => {
-  // console.log(store.state.token);
+// router.beforeEach((to, from, next) => {
+//   // console.log(store.state.token);
 
-  var db = new PouchDB('admindb')
-  db.get('currUser').catch(e => {
-    if (e.status == 404) {
-      next('/login');
-    }
-  });
+//   var db = new PouchDB('admindb')
+//   db.get('currUser').catch(e => {
+//     if (e.status == 404 && to.path != '/login') {
+//       next('/login');
+//     }
+//   });
 
 
 
-  // if (!db.get('currUser')) {
-  //   next('/login');
-  // }
-  // else
-  next();
+//   // if (!db.get('currUser')) {
+//   //   next('/login');
+//   // }
+//   // else
+//   // next();
 
-})
+// })
 
 new Vue({
   router,

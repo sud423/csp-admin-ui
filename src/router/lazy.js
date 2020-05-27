@@ -11,8 +11,10 @@ Vue.use(Router)
 function guard(to, from, next) {
 
   var db = new PouchDB('admindb')
-  db.get('currUser').catch(e => {
-    if (e.status == 404 && to.path != '/login') {
+  db.get('currUser').then(() =>{
+    next();
+  }).catch(e => {
+    if (e.status == 404) {
       next('/login');
     }
   });

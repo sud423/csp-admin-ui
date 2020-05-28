@@ -3,12 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "serve": "vue-cli-service serve --mode development",
+    "build": "vue-cli-service build --mode production",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
     "ant-design-vue": "^1.6.1",
+    "axios": "^0.19.2",
     "core-js": "^3.6.4",
     "enquire": "0.0.2",
     "pouchdb": "^7.2.1",

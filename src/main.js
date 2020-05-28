@@ -9,9 +9,12 @@ import Antd from 'ant-design-vue'
 import store from './store'
 // import PouchDB from 'pouchdb'
 
+import request from './utils/request'
+
 Vue.config.productionTip = false
 
 Vue.use(Antd)
+Vue.prototype.$http = request
 
 
 // router.beforeEach((to, from, next) => {

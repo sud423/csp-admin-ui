@@ -42,8 +42,13 @@
           },
         ]"
               >Remember me</a-checkbox>
-              <a class="login-form-forgot" href>Forgot password</a> -->
-              <a-button type="primary" html-type="submit" class="login-form-button" style="background:#00bcd4; border-color:#00bcd4;">登录</a-button>
+              <a class="login-form-forgot" href>Forgot password</a>-->
+              <a-button
+                type="primary"
+                html-type="submit"
+                class="login-form-button"
+                style="background:#00bcd4; border-color:#00bcd4;"
+              >登录</a-button>
               <!-- Or<a href>register now!</a> -->
             </a-form-item>
           </a-form>
@@ -56,17 +61,31 @@
 <script>
 export default {
   beforeCreate() {
-    this.form = this.$form.createForm(this, { name: 'login' });
+    this.form = this.$form.createForm(this, { name: "login" });
+  },
+  mounted() {
+    // console.log(process.env.NODE_ENV);
+    // console.log(process.env.VUE_APP_BASE_API_URL);
+    // console.log(process.env.FOO);
   },
   methods: {
     handleSubmit(e) {
       e.preventDefault();
+      var $this = this;
       this.form.validateFields((err, values) => {
         if (!err) {
-          console.log('Received values of form: ', values);
+          $this
+            .$http({
+              method: "post",
+              url: "u/api/v1/account/sigin",
+              data: values
+            })
+            .then(res => {
+              console.log(res);
+            });
         }
       });
-    },
+    }
   }
 };
 </script>

@@ -59,6 +59,9 @@
 </template>
 
 <script>
+
+// import jwt_decode from 'jwt-decode'
+
 export default {
   beforeCreate() {
     this.form = this.$form.createForm(this, { name: "login" });
@@ -71,17 +74,18 @@ export default {
   methods: {
     handleSubmit(e) {
       e.preventDefault();
-      var $this = this;
       this.form.validateFields((err, values) => {
         if (!err) {
-          $this
-            .$http({
+          this.$axios({
               method: "post",
               url: "u/api/v1/account/sigin",
               data: values
             })
             .then(res => {
-              console.log(res);
+              // var decoded=jwt_decode(res.accessToken);
+              // console.log(decoded);
+              this.$store.commit('account/setuser', res);
+              this.$router.push('/dashboard');
             });
         }
       });

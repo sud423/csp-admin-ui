@@ -12,7 +12,9 @@
           icon="user"
         />
         <!--:src="currUser.avatar"-->
-        <span>susd</span>
+        <span>
+          <span>{{currUser}}</span>
+        </span>
       </span>
       <a-menu style="width: 150px" slot="overlay">
         <a-menu-item>
@@ -24,11 +26,9 @@
           <span>设置</span>
         </a-menu-item>
         <a-menu-divider />
-        <a-menu-item>
-          <router-link to="/login">
-            <a-icon type="poweroff" />
+        <a-menu-item @click="logout">
+          <a-icon type="poweroff" />
             <span>退出登录</span>
-          </router-link>
         </a-menu-item>
       </a-menu>
     </a-dropdown>
@@ -36,9 +36,25 @@
 </template>
 
 <script>
-export default {    
-  name: "Header"
-}
+import jwt_decode from "jwt-decode";
+
+export default {
+  name: "Header",
+  methods:{
+    logout(){
+      this.$store.commit('account/removeuser');
+      this.$router.push("/login");
+// var user = this.$store.state.account.user;
+    }
+  },
+  computed: {
+    currUser() {
+      var user = this.$store.state.account.user;
+      var jwt = jwt_decode(user.accessToken);
+      return jwt["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
+    }
+  }
+};
 </script>
 
 <style lang="less" scoped>

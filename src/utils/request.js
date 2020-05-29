@@ -2,6 +2,9 @@ import axios from 'axios'
 // import qs from 'qs'
 import PouchDB from 'pouchdb'
 import { message } from 'ant-design-vue'
+// import store from '../store'
+import route from '../router/lazy'
+import jwt_decode from 'jwt-decode'
 
 // axios 配置
 axios.defaults.timeout = 30000;
@@ -10,20 +13,24 @@ axios.defaults.baseURL = process.env.VUE_APP_BASE_API_URL;
 
 //POST传参序列化
 axios.interceptors.request.use(function (config) {
-
+    // console.log(store.state.account.user.exp < Math.round(new Date().getTime() / 1000));
     var db = new PouchDB('admindb')
     db.get('currUser').then(doc => {
-        config.headers.common['Authorization'] = 'bear ' + doc.token;
-    }).catch(e => {
-        if (e.status == 404) {
-            console.log(e);
-        }
+        var user=jwt_decode(doc.user.accessToken);
+        if (user.exp > Math.round(new Date().getTime() / 1000))
+            config.headers.common['Authorization'] = doc.user.tokenType + ' ' + doc.user.accessToken;
+        else
+            route.push('/login');
+    }).catch(() => {
+        // if (e.status == 404) {
+        //     console.log(e);
+        // }
     });
 
     return config;
 }, function (error) {
     message.error('参数配置错误');
-    
+
     return Promise.reject(error);
 });
 
@@ -31,21 +38,28 @@ axios.interceptors.request.use(function (config) {
 axios.interceptors.response.use(function (res) {
 
     var result = res.data;
+    if (res.status != 200) {
+        if (res.status == 400)
+            message.error(result.msg);
+        else
+            print(res.status);
 
-    if(res.code!=200 || !result.succ){
-        message.error(result.msg);
         return Promise.reject(res);
     }
 
     return result;
 
 }, function (error) {
-    
-    var msg = "网络异常";
-    switch (error.response && error.response.status) {
-        case 400:
-            msg = error.response.data.error_description;
-            break;
+
+    print(error.response && error.response.status);
+    return Promise.reject(error);
+});
+
+
+function print(code) {
+
+    var msg = "错误请求";
+    switch (code) {
         case 401:
             msg = "身份凭证已过期，请重新登录"
             break;
@@ -56,9 +70,12 @@ axios.interceptors.response.use(function (res) {
             msg = "请求的链接不存在";
             break;
     }
-    message.error(msg);
-    return Promise.reject(error);
-});
+    message.error(msg).then(() => {
+        if (code == 401) {
+            route.push('/login');
+        }
+    });
+}
 
 export default function (config) {
     return new Promise((resolve, reject) => {

@@ -6,14 +6,32 @@ import dashboard from '../views/dashboard'
 import Login from '../views/login'
 import layout from '../views/shared/layout'
 
+import store from "../store"
+import jwt_decode from 'jwt-decode'
+
 Vue.use(Router)
 
 function guard(to, from, next) {
-
+  
+  //创建db对象
   var db = new PouchDB('admindb')
-  db.get('currUser').then(() =>{
-    next();
+
+  //获取当前用户对象
+  db.get('currUser').then(doc => {
+    //修改当前用户，避免vuex刷新页面时当前用名为空
+    store.commit('account/edituser', doc.user);
+    
+    //解析token
+    var user = jwt_decode(doc.user.accessToken);
+
+    //判断 token是否过期，过期就跳转到登录页面
+    if (user.exp > Math.round(new Date().getTime() / 1000)) {      
+      next();
+    }
+    else
+      next('/login');
   }).catch(e => {
+    //如果当前用户不存在就跳转到登录页面
     if (e.status == 404) {
       next('/login');
     }
@@ -25,7 +43,7 @@ export default new Router({
   linkActiveClass: 'active',
   routes: [{
     path: '/login',
-    name: '登录页',
+    name: 'login',
     component: Login,
     invisible: true
   }, {

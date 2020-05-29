@@ -8,7 +8,7 @@ export default {
     user: {}
   },
   mutations: {
-    setuser (state, user) {
+    setuser(state, user) {
       state.user = user
       db.get('currUser').then(doc => {
         db.put({
@@ -26,6 +26,17 @@ export default {
           throw e
         }
       })
+    },
+    edituser(state,user){
+      state.user = user
+    },
+    removeuser(state){
+      state.user = {};
+      db.get('currUser').then(function(doc) {
+        return db.remove(doc);
+      }).catch(()=>{
+
+      });
     }
   }
 }

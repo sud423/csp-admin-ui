@@ -14,7 +14,7 @@ import request from './utils/request'
 Vue.config.productionTip = false
 
 Vue.use(Antd)
-Vue.prototype.$http = request
+Vue.prototype.$axios = request
 
 
 // router.beforeEach((to, from, next) => {

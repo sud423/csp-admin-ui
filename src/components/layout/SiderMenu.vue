@@ -56,7 +56,6 @@ export default {
   },
   computed: {
     isMobile() {
-      console.log(this.menuData);
       return this.$store.state.setting.isMobile;
     },
     systemName() {

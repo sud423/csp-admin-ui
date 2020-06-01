@@ -16,16 +16,12 @@ axios.interceptors.request.use(function (config) {
     // console.log(store.state.account.user.exp < Math.round(new Date().getTime() / 1000));
     var db = new PouchDB('admindb')
     db.get('currUser').then(doc => {
-        var user=jwt_decode(doc.user.accessToken);
+        var user = jwt_decode(doc.user.accessToken);
         if (user.exp > Math.round(new Date().getTime() / 1000))
             config.headers.common['Authorization'] = doc.user.tokenType + ' ' + doc.user.accessToken;
         else
             route.push('/login');
-    }).catch(() => {
-        // if (e.status == 404) {
-        //     console.log(e);
-        // }
-    });
+    }).catch(err=>err);
 
     return config;
 }, function (error) {
@@ -38,28 +34,35 @@ axios.interceptors.request.use(function (config) {
 axios.interceptors.response.use(function (res) {
 
     var result = res.data;
-    if (res.status != 200) {
-        if (res.status == 400)
-            message.error(result.msg);
-        else
-            print(res.status);
+    // if (res.status != 200) {
+    //     if (res.status == 400)
+    //         message.error(result.msg);
+    //     else
+    //         print(res.status);
 
-        return Promise.reject(res);
-    }
+    //     return Promise.reject(res);
+    // }
 
     return result;
 
 }, function (error) {
 
-    print(error.response && error.response.status);
+    print(error);
+
     return Promise.reject(error);
 });
 
 
-function print(code) {
+function print(error) {
 
-    var msg = "错误请求";
-    switch (code) {
+    var msg = error.response.statusText;
+    switch (error.response.status) {
+        case 400:
+            var data = error.response.data;
+            if (data && !data.succ) {
+                msg = data.msg;
+            }
+            break;
         case 401:
             msg = "身份凭证已过期，请重新登录"
             break;
@@ -71,7 +74,7 @@ function print(code) {
             break;
     }
     message.error(msg).then(() => {
-        if (code == 401) {
+        if (error.response.status == 401) {
             route.push('/login');
         }
     });

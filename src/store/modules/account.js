@@ -27,15 +27,13 @@ export default {
         }
       })
     },
-    edituser(state,user){
+    edituser(state, user) {
       state.user = user
     },
-    removeuser(state){
+    removeuser(state) {
       state.user = {};
-      db.get('currUser').then(function(doc) {
+      db.get('currUser').then(function (doc) {
         return db.remove(doc);
-      }).catch(()=>{
-
       });
     }
   }

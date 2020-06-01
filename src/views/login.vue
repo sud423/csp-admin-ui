@@ -2,7 +2,10 @@
   <div class="wrap">
     <div class="split-bg">
       <div class="layout align-center justify-center" style="min-height: 100vh;">
-        <a-card hoverable style="width:33.33%">
+
+<a-row type="flex" justify="center" style="width:100%;">
+      <a-col :xs="22" :sm="24" :md="16" :lg="8" :xl="8">
+        <a-card hoverable >
           <div class="layout align-center justify-center main">
             <img slot="cover" width="120" alt="example" src="http://vma.isocked.com/static/m.png" />
             <h1>欢迎登录</h1>
@@ -48,21 +51,30 @@
                 html-type="submit"
                 class="login-form-button"
                 style="background:#00bcd4; border-color:#00bcd4;"
+                :loading="isLoading"
               >登录</a-button>
               <!-- Or<a href>register now!</a> -->
             </a-form-item>
           </a-form>
         </a-card>
+      </a-col>
+    </a-row>
+
+        
       </div>
     </div>
   </div>
 </template>
 
 <script>
-
 // import jwt_decode from 'jwt-decode'
 
 export default {
+  data() {
+    return {
+      isLoading: false
+    };
+  },
   beforeCreate() {
     this.form = this.$form.createForm(this, { name: "login" });
   },
@@ -76,16 +88,25 @@ export default {
       e.preventDefault();
       this.form.validateFields((err, values) => {
         if (!err) {
+          this.isLoading = true;
           this.$axios({
-              method: "post",
-              url: "u/api/v1/account/sigin",
-              data: values
-            })
+            method: "post",
+            url: "u/api/v1/account/sigin",
+            data: values
+          })
             .then(res => {
+              // this.isLoading = false;
               // var decoded=jwt_decode(res.accessToken);
               // console.log(decoded);
-              this.$store.commit('account/setuser', res);
-              this.$router.push('/dashboard');
+              this.$store.commit("account/setuser", res);
+              var vm=this;
+              setTimeout(function() {
+                this.isLoading = false;
+                vm.$router.push("/dashboard");
+              }, 500);
+            })
+            .catch(() => {
+              this.isLoading = false;
             });
         }
       });

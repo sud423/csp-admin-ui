@@ -5,38 +5,51 @@ import PouchDB from 'pouchdb'
 import dashboard from '../views/dashboard'
 import Login from '../views/login'
 import layout from '../views/shared/layout'
+import pageview from '../views/shared/pageview'
 
 import store from "../store"
 import jwt_decode from 'jwt-decode'
 
 Vue.use(Router)
 
+//在路由跳转的时候同一个路由多次添加是不被允许的
+//重写路由的push方法
+// const VueRouterPush = Router.prototype.push
+// Router.prototype.push = function push (to) {
+//     return VueRouterPush.call(this, to).catch(err => err)
+// }
+
+
 function guard(to, from, next) {
-  
-  //创建db对象
-  var db = new PouchDB('admindb')
 
-  //获取当前用户对象
-  db.get('currUser').then(doc => {
-    //修改当前用户，避免vuex刷新页面时当前用名为空
-    store.commit('account/edituser', doc.user);
-    
-    //解析token
-    var user = jwt_decode(doc.user.accessToken);
+    //创建db对象
+    var db = new PouchDB('admindb')
 
-    //判断 token是否过期，过期就跳转到登录页面
-    if (user.exp > Math.round(new Date().getTime() / 1000)) {      
-      next();
-    }
-    else
-      next('/login');
-  }).catch(e => {
-    //如果当前用户不存在就跳转到登录页面
-    if (e.status == 404) {
-      next('/login');
-    }
-  });
+    //获取当前用户对象
+    db.get('currUser').then(doc => {
+      //修改当前用户，避免vuex刷新页面时当前用名为空
+      store.commit('account/edituser', doc.user);
+      redirectTo(doc.user, next);
+    }).catch(e => {
+      //如果当前用户不存在就跳转到登录页面
+      if (e.status == 404) {
+        next('/login');
+      }
+    });
   // next();
+}
+
+function redirectTo(user, next) {
+
+  //解析token
+  var jwt = jwt_decode(user.accessToken);
+
+  //判断 token是否过期，过期就跳转到登录页面
+  if (jwt.exp > Math.round(new Date().getTime() / 1000)) {
+    next();
+  }
+  else
+    next('/login');
 }
 
 export default new Router({
@@ -62,32 +75,38 @@ export default new Router({
         icon: 'dashboard',
 
       },
-      // {
-      //   path: '/form',
-      //   name: '表单页',
-      //   component: PageView,
-      //   icon: 'form',
-      //   children: [
-      //     {
-      //       path: '/form/basic',
-      //       name: '基础表单',
-      //       component: BasicForm,
-      //       icon: 'none'
-      //     },
-      //     {
-      //       path: '/form/step',
-      //       name: '分步表单',
-      //       component: StepForm,
-      //       icon: 'none'
-      //     },
-      //     {
-      //       path: '/form/advanced',
-      //       name: '高级表单',
-      //       component: AdvancedForm,
-      //       icon: 'none'
-      //     }
-      //   ]
-      // },
+      {
+        path: '/training',
+        name: '企业培训',
+        component: pageview,
+        icon: 'form',
+        children: [
+          {
+            path: '/training/project',
+            name: '项目管理',
+            component: () => import('@/views/blank'),
+            icon: 'none'
+          },
+          {
+            path: '/training/cla',
+            name: '班级管理',
+            component: () => import('@/views/blank'),
+            icon: 'none'
+          },
+          {
+            path: '/training/cous',
+            name: '课程查询',
+            component: () => import('@/views/blank'),
+            icon: 'none'
+          },
+          {
+            path: '/training/tea',
+            name: '师资查询',
+            component: () => import('@/views/blank'),
+            icon: 'none'
+          }
+        ]
+      },
       // {
       //   path: '/list',
       //   name: '列表页',

@@ -21,7 +21,7 @@
           @click="() => (collapsed = !collapsed)"
         />
 
-        <Header/>
+        <header-avatar />
       </a-layout-header>
       <a-layout-content>
         <div class="breadcrumb">
@@ -36,9 +36,10 @@
         </div>
 
         <div :style="{margin:'24px 24px 0px',minHeight: minHeight }">
-          <transition name="page-toggle">
+          <!-- <transition name="fade">
             <router-view />
-          </transition>
+          </transition>-->
+          <router-view />
         </div>
       </a-layout-content>
       <a-layout-footer style="text-align: center">
@@ -53,14 +54,14 @@
 import enquireScreen from "../../utils/device";
 
 import SiderMenu from "../../components/layout/SiderMenu";
-import Header from "../../components/layout/Header";
+import HeaderAvatar from "../../components/layout/HeaderAvatar";
 
 const minHeight = window.innerHeight - 211;
 let menuData = [];
 
 export default {
   name: "Layout",
-  components: { SiderMenu, Header },
+  components: { SiderMenu, HeaderAvatar },
   data() {
     return {
       minHeight: minHeight + "px",

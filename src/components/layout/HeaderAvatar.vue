@@ -28,7 +28,7 @@
         <a-menu-divider />
         <a-menu-item @click="logout">
           <a-icon type="poweroff" />
-            <span>退出登录</span>
+          <span>退出登录</span>
         </a-menu-item>
       </a-menu>
     </a-dropdown>
@@ -39,19 +39,21 @@
 import jwt_decode from "jwt-decode";
 
 export default {
-  name: "Header",
-  methods:{
-    logout(){
-      this.$store.commit('account/removeuser');
+  name: "HeaderAvatar",
+  methods: {
+    logout() {
+      this.$store.commit("account/removeuser");
       this.$router.push("/login");
-// var user = this.$store.state.account.user;
+      // var user = this.$store.state.account.user;
     }
   },
   computed: {
     currUser() {
       var user = this.$store.state.account.user;
       var jwt = jwt_decode(user.accessToken);
-      return jwt["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
+      return jwt[
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+      ];
     }
   }
 };

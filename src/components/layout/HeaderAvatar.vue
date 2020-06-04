@@ -42,8 +42,18 @@ export default {
   name: "HeaderAvatar",
   methods: {
     logout() {
-      this.$store.commit("account/removeuser");
-      this.$router.push("/login");
+      this.$confirm({
+        title: "您确定要退出登录?",
+        content: "确认退出点击“确定”，关闭点“取消”。",
+        onOk() {
+          this.$store.commit("account/removeuser");
+          this.$router.push("/login");
+        },
+        onCancel() {
+          console.log("Cancel");
+        }
+      });
+
       // var user = this.$store.state.account.user;
     }
   },

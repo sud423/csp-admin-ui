@@ -1,28 +1,43 @@
 import axios from 'axios'
 // import qs from 'qs'
-import PouchDB from 'pouchdb'
+// import PouchDB from 'pouchdb'
 import { message } from 'ant-design-vue'
-// import store from '../store'
+import store from '../store'
 import route from '../router/lazy'
 import jwt_decode from 'jwt-decode'
 
 // axios 配置
 axios.defaults.timeout = 30000;
-axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
+// axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
 axios.defaults.baseURL = process.env.VUE_APP_BASE_API_URL;
 
 //POST传参序列化
 axios.interceptors.request.use(function (config) {
     // console.log(store.state.account.user.exp < Math.round(new Date().getTime() / 1000));
-    var db = new PouchDB('admindb')
-    db.get('currUser').then(doc => {
-        var user = jwt_decode(doc.user.accessToken);
-        if (user.exp > Math.round(new Date().getTime() / 1000))
-            config.headers.common['Authorization'] = doc.user.tokenType + ' ' + doc.user.accessToken;
-        else
-            route.push('/login');
-    }).catch(err=>err);
+    // var db = new PouchDB('admindb')
+    // db.get('currUser').then(doc => {
+    //     console.log(doc);
+    //     var user = jwt_decode(doc.user.accessToken);
+    //     if (user.exp > Math.round(new Date().getTime() / 1000))
+    //         axios.defaults.headers.Authorization = doc.user.tokenType + ' ' + doc.user.accessToken;
+    //     else {
+    //         store.commit("account/removeuser");
+    //         route.push('/login');
+    //     }
 
+    // }).catch(err => { console.log(err) });
+
+    var user = store.state.account.user;
+    
+    if (user && user.accessToken) {
+        var jwt = jwt_decode(user.accessToken);
+        if (user.accessToken && jwt.exp > Math.round(new Date().getTime() / 1000))
+            config.headers.Authorization = user.tokenType + ' ' + user.accessToken;
+        else {
+            store.commit("account/removeuser");
+            route.push('/login');
+        }
+    }
     return config;
 }, function (error) {
     message.error('参数配置错误');
@@ -54,7 +69,6 @@ axios.interceptors.response.use(function (res) {
 
 
 function print(error) {
-
     var msg = error.response.statusText;
     switch (error.response.status) {
         case 400:
@@ -75,6 +89,7 @@ function print(error) {
     }
     message.error(msg).then(() => {
         if (error.response.status == 401) {
+            store.commit("account/removeuser");
             route.push('/login');
         }
     });

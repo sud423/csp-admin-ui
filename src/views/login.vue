@@ -49,7 +49,7 @@
               <a-button
                 type="primary"
                 html-type="submit"
-                class="login-form-button"
+                block
                 style="background:#00bcd4; border-color:#00bcd4;"
                 :loading="isLoading"
               >登录</a-button>
@@ -168,8 +168,5 @@ export default {
 }
 .login-form-forgot {
   float: right;
-}
-.login-form-button {
-  width: 100%;
 }
 </style>

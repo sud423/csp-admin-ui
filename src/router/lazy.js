@@ -84,7 +84,7 @@ export default new Router({
           {
             path: '/training/project',
             name: '项目管理',
-            component: () => import('@/views/blank'),
+            component: () => import('@/views/training/project'),
             icon: 'none'
           },
           {
@@ -102,6 +102,12 @@ export default new Router({
           {
             path: '/training/tea',
             name: '师资查询',
+            component: () => import('@/views/blank'),
+            icon: 'none'
+          },
+          {
+            path: '/training/alu',
+            name: '校友查询',
             component: () => import('@/views/blank'),
             icon: 'none'
           }

@@ -102,7 +102,7 @@ export default {
             {attrs: {href: '#' + menu.path}},
             [
               this.renderIcon(h, menu.icon),
-              h('span', [menu.name])
+              h('span', [menu.meta.label])
             ]
           )
         ]
@@ -114,7 +114,7 @@ export default {
         {slot: 'title'},
         [
           this.renderIcon(h, menu.icon),
-          h('span', [menu.name])
+          h('span', [menu.meta.label])
         ]
       )]
       var itemArr = []

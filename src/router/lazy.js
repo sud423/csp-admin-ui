@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import PouchDB from 'pouchdb'
+
 
 import dashboard from '../views/dashboard'
 import Login from '../views/login'
@@ -8,46 +8,21 @@ import layout from '../views/shared/layout'
 import pageview from '../views/shared/pageview'
 
 import store from "../store"
-import jwt_decode from 'jwt-decode'
 
 Vue.use(Router)
 
 //在路由跳转的时候同一个路由多次添加是不被允许的
 //重写路由的push方法
-// const VueRouterPush = Router.prototype.push
-// Router.prototype.push = function push (to) {
-//     return VueRouterPush.call(this, to).catch(err => err)
-// }
-
+const VueRouterPush = Router.prototype.push
+Router.prototype.push = function push(to) {
+  return VueRouterPush.call(this, to).catch(err => err)
+}
 
 function guard(to, from, next) {
 
-    //创建db对象
-    var db = new PouchDB('admindb')
-
-    //获取当前用户对象
-    db.get('currUser').then(doc => {
-      //修改当前用户，避免vuex刷新页面时当前用名为空
-      store.commit('account/edituser', doc.user);
-      redirectTo(doc.user, next);
-    }).catch(e => {
-      //如果当前用户不存在就跳转到登录页面
-      if (e.status == 404) {
-        next('/login');
-      }
-    });
-  // next();
-}
-
-function redirectTo(user, next) {
-
-  //解析token
-  var jwt = jwt_decode(user.accessToken);
-
-  //判断 token是否过期，过期就跳转到登录页面
-  if (jwt.exp > Math.round(new Date().getTime() / 1000)) {
+  var user = store.state.account.user;
+  if (user && user.exp > 0 && user.exp > Math.round(new Date().getTime() / 1000))
     next();
-  }
   else
     next('/login');
 }
@@ -61,7 +36,8 @@ export default new Router({
     invisible: true
   }, {
     path: '/',
-    name: '首页',
+    name: 'index',
+    meta: {label:'首页'},
     beforeEnter: guard,
     component: layout,
     redirect: '/dashboard',
@@ -70,49 +46,99 @@ export default new Router({
     children: [
       {
         path: '/dashboard',
-        name: 'Dashboard',
+        name: 'dashboard',
+        meta: {label:'Dashboard'},
         component: dashboard,
-        icon: 'dashboard',
-
+        icon: 'dashboard'
       },
       {
         path: '/training',
-        name: '企业培训',
+        name: 'training',
+        meta: {label:'企业培训'},
         component: pageview,
         icon: 'form',
         children: [
           {
             path: '/training/project',
-            name: '项目管理',
+            name: 'training-project',
+            meta: {label:'项目管理'},
             component: () => import('@/views/training/project'),
             icon: 'none'
           },
           {
             path: '/training/cla',
-            name: '班级管理',
+            name: 'training-cla',
+            meta: {label:'班级管理'},
             component: () => import('@/views/blank'),
             icon: 'none'
           },
           {
             path: '/training/cous',
-            name: '课程查询',
+            name: 'training-cous',
+            meta: {label:'课程查询'},
             component: () => import('@/views/blank'),
             icon: 'none'
           },
           {
             path: '/training/tea',
-            name: '师资查询',
+            name: 'training-tea',
+            meta: {label:'师资查询'},
             component: () => import('@/views/blank'),
             icon: 'none'
           },
           {
             path: '/training/alu',
-            name: '校友查询',
+            name: 'training-alu',
+            meta: {label:'校友查询'},
             component: () => import('@/views/blank'),
             icon: 'none'
           }
         ]
       },
+      {
+        path: '/basic',
+        name: 'basic',
+        meta: {label:'基础教育'},
+        component: pageview,
+        icon: 'form',
+        children: [
+          {
+            path: '/basic/project',
+            name: 'basic-project',
+            meta: {label:'项目管理'},
+            component: () => import('@/views/blank'),
+            icon: 'none'
+          },
+          {
+            path: '/basic/cla',
+            name: 'basic-cla',
+            meta: {label:'班级管理'},
+            component: () => import('@/views/blank'),
+            icon: 'none'
+          },
+          {
+            path: '/basic/cous',
+            name: 'basic-cous',
+            meta: {label:'课程查询'},
+            component: () => import('@/views/blank'),
+            icon: 'none'
+          },
+          {
+            path: '/basic/tea',
+            name: 'basic-tea',
+            meta: {label:'师资查询'},
+            component: () => import('@/views/blank'),
+            icon: 'none'
+          },
+          {
+            path: '/basic/alu',
+            name: 'basic-alu',
+            meta: {label:'校友查询'},
+            component: () => import('@/views/blank'),
+            icon: 'none'
+          }
+        ]
+      }
       // {
       //   path: '/list',
       //   name: '列表页',

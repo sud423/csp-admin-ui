@@ -28,9 +28,9 @@
           <a-breadcrumb>
             <a-breadcrumb-item :key="item.path" v-for="(item, index) in breadcrumb">
               <span v-if="index === 0">
-                <a href="#/">{{item.name}}</a>
+                <a :href="item.path">{{item.meta.label}}</a>
               </span>
-              <span v-else>{{item.name}}</span>
+              <span v-else>{{item.meta.label}}</span>
             </a-breadcrumb-item>
           </a-breadcrumb>
         </div>

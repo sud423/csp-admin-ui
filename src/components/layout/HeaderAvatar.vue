@@ -13,7 +13,7 @@
         />
         <!--:src="currUser.avatar"-->
         <span>
-          <span>{{currUser}}</span>
+          <span>{{currUser.nick}}</span>
         </span>
       </span>
       <a-menu style="width: 150px" slot="overlay">
@@ -36,34 +36,26 @@
 </template>
 
 <script>
-import jwt_decode from "jwt-decode";
 
 export default {
   name: "HeaderAvatar",
   methods: {
     logout() {
+      var vm=this;
       this.$confirm({
         title: "您确定要退出登录?",
         content: "确认退出点击“确定”，关闭点“取消”。",
         onOk() {
-          this.$store.commit("account/removeuser");
-          this.$router.push("/login");
-        },
-        onCancel() {
-          console.log("Cancel");
+          vm.$store.commit("account/removeuser");
+          vm.$router.push("/login");
         }
       });
 
-      // var user = this.$store.state.account.user;
     }
   },
   computed: {
     currUser() {
-      var user = this.$store.state.account.user;
-      var jwt = jwt_decode(user.accessToken);
-      return jwt[
-        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-      ];
+      return this.$store.state.account.user;      
     }
   }
 };

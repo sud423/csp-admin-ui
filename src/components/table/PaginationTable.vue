@@ -6,14 +6,25 @@
     :data-source="dataSource.data"
     :pagination="pagination"
     :loading="loading"
-  >
-    <template  v-for="column in columns"  :slot="column.scopedSlots?column.scopedSlots.customRender:''" slot-scope="text,record" >
-					<slot :name="column.scopedSlots?column.scopedSlots.customRender:''" v-bind="record" ></slot>
-				</template>
+    
+  ><!--:scroll="{  y: minHeight }"-->
+    <template
+      v-for="column in columns"
+      :slot="column.scopedSlots?column.scopedSlots.customRender:''"
+      slot-scope="text,record"
+    >
+      <slot
+        :name="column.scopedSlots?column.scopedSlots.customRender:''"
+        :text="text"
+        :record="record"
+      ></slot>
+    </template>
   </a-table>
 </template>
 
 <script>
+const minHeight = window.innerHeight - 422;
+
 export default {
   name: "PaginationTable",
   props: {
@@ -49,6 +60,7 @@ export default {
   },
   data() {
     return {
+      minHeight: minHeight,
       selectedRowKeys: [],
       pagination: {
         size: "small", //尺寸

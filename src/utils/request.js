@@ -1,10 +1,8 @@
 import axios from 'axios'
-// import qs from 'qs'
-// import PouchDB from 'pouchdb'
-import { message } from 'ant-design-vue'
+
+import { message, Modal } from 'ant-design-vue'
 import store from '../store'
 import route from '../router/lazy'
-import jwt_decode from 'jwt-decode'
 
 // axios 配置
 axios.defaults.timeout = 30000;
@@ -13,29 +11,29 @@ axios.defaults.baseURL = process.env.VUE_APP_BASE_API_URL;
 
 //POST传参序列化
 axios.interceptors.request.use(function (config) {
-    // console.log(store.state.account.user.exp < Math.round(new Date().getTime() / 1000));
-    // var db = new PouchDB('admindb')
-    // db.get('currUser').then(doc => {
-    //     console.log(doc);
-    //     var user = jwt_decode(doc.user.accessToken);
-    //     if (user.exp > Math.round(new Date().getTime() / 1000))
-    //         axios.defaults.headers.Authorization = doc.user.tokenType + ' ' + doc.user.accessToken;
-    //     else {
-    //         store.commit("account/removeuser");
-    //         route.push('/login');
-    //     }
-
-    // }).catch(err => { console.log(err) });
 
     var user = store.state.account.user;
-    
-    if (user && user.accessToken) {
-        var jwt = jwt_decode(user.accessToken);
-        if (user.accessToken && jwt.exp > Math.round(new Date().getTime() / 1000))
-            config.headers.Authorization = user.tokenType + ' ' + user.accessToken;
+    var token = store.state.account.token;
+console.log(user);
+console.log(token);
+    if (user && token && token.accessToken) {
+
+        if (user.exp > Math.round(new Date().getTime() / 1000))
+            config.headers.Authorization = token.tokenType + ' ' + token.accessToken;
         else {
-            store.commit("account/removeuser");
-            route.push('/login');
+            Modal.warning({
+                title: '身份凭证无效',
+                content: '您的身份凭证已失效，请重新登录获取凭证。',
+                okText: '确定',
+                onOk() {
+                    store.commit("account/removeuser");
+                    route.push('/login');
+                }
+            });
+
+            return Promise.reject();
+            // store.commit("account/removeuser");
+            // route.push('/login');
         }
     }
     return config;
@@ -49,20 +47,12 @@ axios.interceptors.request.use(function (config) {
 axios.interceptors.response.use(function (res) {
 
     var result = res.data;
-    // if (res.status != 200) {
-    //     if (res.status == 400)
-    //         message.error(result.msg);
-    //     else
-    //         print(res.status);
-
-    //     return Promise.reject(res);
-    // }
-
     return result;
 
 }, function (error) {
 
-    print(error);
+    if (error)
+        print(error);
 
     return Promise.reject(error);
 });
@@ -78,7 +68,7 @@ function print(error) {
             }
             break;
         case 401:
-            msg = "身份凭证已过期，请重新登录"
+            msg = "您的凭证无效，无法请求资源"
             break;
         case 500:
             msg = "内部服务出错";
@@ -87,12 +77,7 @@ function print(error) {
             msg = "请求的链接不存在";
             break;
     }
-    message.error(msg).then(() => {
-        if (error.response.status == 401) {
-            store.commit("account/removeuser");
-            route.push('/login');
-        }
-    });
+    message.error(msg);
 }
 
 export default function (config) {

@@ -2,41 +2,46 @@
   <div class="wrap">
     <div class="split-bg">
       <div class="layout align-center justify-center" style="min-height: 100vh;">
+        <a-row type="flex" justify="center" style="width:100%;">
+          <a-col :xs="22" :sm="24" :md="16" :lg="8" :xl="8">
+            <a-card hoverable>
+              <div class="layout align-center justify-center main">
+                <img
+                  slot="cover"
+                  width="120"
+                  alt="example"
+                  src="http://vma.isocked.com/static/m.png"
+                />
+                <h1>欢迎登录</h1>
+              </div>
 
-<a-row type="flex" justify="center" style="width:100%;">
-      <a-col :xs="22" :sm="24" :md="16" :lg="8" :xl="8">
-        <a-card hoverable >
-          <div class="layout align-center justify-center main">
-            <img slot="cover" width="120" alt="example" src="http://vma.isocked.com/static/m.png" />
-            <h1>欢迎登录</h1>
-          </div>
-
-          <a-form layout="vertical" :form="form" @submit="handleSubmit">
-            <a-form-item label="用户名">
-              <a-input
-                placeholder="请输入用户名"
-                v-decorator="[
+              <a-form layout="vertical" :form="form" @submit="handleSubmit" hide-required-mark>
+                <a-form-item label="用户名">
+                  <a-input
+                    autocomplete="off"
+                    placeholder="请输入用户名"
+                    v-decorator="[
           'username',
           { rules: [{ required: true, message: '用户名不能为空' }] },
         ]"
-              >
-                <a-icon slot="prefix" type="user" style="color:rgba(0,0,0,.25)" />
-              </a-input>
-            </a-form-item>
-            <a-form-item label="密码">
-              <a-input
-                placeholder="请输入密码"
-                type="password"
-                v-decorator="[
+                  >
+                    <a-icon slot="prefix" type="user" style="color:rgba(0,0,0,.25)" />
+                  </a-input>
+                </a-form-item>
+                <a-form-item label="密码">
+                  <a-input
+                    placeholder="请输入密码"
+                    type="password"
+                    v-decorator="[
           'password',
           { rules: [{ required: true, message: '密码不能为空' }] },
         ]"
-              >
-                <a-icon slot="prefix" type="lock" style="color:rgba(0,0,0,.25)" />
-              </a-input>
-            </a-form-item>
-            <a-form-item>
-              <!-- <a-checkbox
+                  >
+                    <a-icon slot="prefix" type="lock" style="color:rgba(0,0,0,.25)" />
+                  </a-input>
+                </a-form-item>
+                <a-form-item>
+                  <!-- <a-checkbox
                 v-decorator="[
           'remember',
           {
@@ -45,22 +50,20 @@
           },
         ]"
               >Remember me</a-checkbox>
-              <a class="login-form-forgot" href>Forgot password</a>-->
-              <a-button
-                type="primary"
-                html-type="submit"
-                block
-                style="background:#00bcd4; border-color:#00bcd4;"
-                :loading="isLoading"
-              >登录</a-button>
-              <!-- Or<a href>register now!</a> -->
-            </a-form-item>
-          </a-form>
-        </a-card>
-      </a-col>
-    </a-row>
-
-        
+                  <a class="login-form-forgot" href>Forgot password</a>-->
+                  <a-button
+                    type="primary"
+                    html-type="submit"
+                    block
+                    style="background:#00bcd4; border-color:#00bcd4;"
+                    :loading="isLoading"
+                  >登录</a-button>
+                  <!-- Or<a href>register now!</a> -->
+                </a-form-item>
+              </a-form>
+            </a-card>
+          </a-col>
+        </a-row>
       </div>
     </div>
   </div>
@@ -72,11 +75,12 @@
 export default {
   data() {
     return {
-      isLoading: false
+      isLoading: false,
+      form: this.$form.createForm(this)
     };
   },
   beforeCreate() {
-    this.form = this.$form.createForm(this, { name: "login" });
+    // this.form = this.$form.createForm(this, { name: "login" });
   },
   mounted() {
     // console.log(process.env.NODE_ENV);
@@ -95,17 +99,14 @@ export default {
             data: values
           })
             .then(res => {
-              // this.isLoading = false;
-              // var decoded=jwt_decode(res.accessToken);
-              // console.log(decoded);
               this.$store.commit("account/setuser", res);
-              var vm=this;
+              
+              var vm = this;
               setTimeout(function() {
-                this.isLoading = false;
                 vm.$router.push("/dashboard");
-              }, 500);
+              }, 0);
             })
-            .catch(() => {
+            .finally(() => {
               this.isLoading = false;
             });
         }

@@ -23,8 +23,10 @@ function guard(to, from, next) {
   var user = store.state.account.user;
   if (user && user.exp > 0 && user.exp > Math.round(new Date().getTime() / 1000))
     next();
-  else
+  else {
+    store.commit("account/removeuser");
     next('/login');
+  }
 }
 
 export default new Router({
@@ -37,7 +39,7 @@ export default new Router({
   }, {
     path: '/',
     name: 'index',
-    meta: {label:'首页'},
+    meta: { label: '首页' },
     beforeEnter: guard,
     component: layout,
     redirect: '/dashboard',
@@ -47,49 +49,49 @@ export default new Router({
       {
         path: '/dashboard',
         name: 'dashboard',
-        meta: {label:'Dashboard'},
+        meta: { label: 'Dashboard' },
         component: dashboard,
         icon: 'dashboard'
       },
       {
         path: '/training',
         name: 'training',
-        meta: {label:'企业培训'},
+        meta: { label: '企业培训' },
         component: pageview,
         icon: 'form',
         children: [
           {
             path: '/training/project',
             name: 'training-project',
-            meta: {label:'项目管理'},
+            meta: { label: '项目管理' },
             component: () => import('@/views/training/project'),
             icon: 'none'
           },
           {
             path: '/training/cla',
             name: 'training-cla',
-            meta: {label:'班级管理'},
+            meta: { label: '班级管理' },
             component: () => import('@/views/blank'),
             icon: 'none'
           },
           {
             path: '/training/cous',
             name: 'training-cous',
-            meta: {label:'课程查询'},
+            meta: { label: '课程查询' },
             component: () => import('@/views/blank'),
             icon: 'none'
           },
           {
             path: '/training/tea',
             name: 'training-tea',
-            meta: {label:'师资查询'},
+            meta: { label: '师资查询' },
             component: () => import('@/views/blank'),
             icon: 'none'
           },
           {
             path: '/training/alu',
             name: 'training-alu',
-            meta: {label:'校友查询'},
+            meta: { label: '校友查询' },
             component: () => import('@/views/blank'),
             icon: 'none'
           }
@@ -98,42 +100,42 @@ export default new Router({
       {
         path: '/basic',
         name: 'basic',
-        meta: {label:'基础教育'},
+        meta: { label: '基础教育' },
         component: pageview,
         icon: 'form',
         children: [
           {
             path: '/basic/project',
             name: 'basic-project',
-            meta: {label:'项目管理'},
+            meta: { label: '项目管理' },
             component: () => import('@/views/blank'),
             icon: 'none'
           },
           {
             path: '/basic/cla',
             name: 'basic-cla',
-            meta: {label:'班级管理'},
+            meta: { label: '班级管理' },
             component: () => import('@/views/blank'),
             icon: 'none'
           },
           {
             path: '/basic/cous',
             name: 'basic-cous',
-            meta: {label:'课程查询'},
+            meta: { label: '课程查询' },
             component: () => import('@/views/blank'),
             icon: 'none'
           },
           {
             path: '/basic/tea',
             name: 'basic-tea',
-            meta: {label:'师资查询'},
+            meta: { label: '师资查询' },
             component: () => import('@/views/blank'),
             icon: 'none'
           },
           {
             path: '/basic/alu',
             name: 'basic-alu',
-            meta: {label:'校友查询'},
+            meta: { label: '校友查询' },
             component: () => import('@/views/blank'),
             icon: 'none'
           }

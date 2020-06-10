@@ -14,9 +14,7 @@ axios.interceptors.request.use(function (config) {
 
     var user = store.state.account.user;
     var token = store.state.account.token;
-console.log(user);
-console.log(token);
-    if (user && token && token.accessToken) {
+    if (user && user.exp>0 && token && token.accessToken) {
 
         if (user.exp > Math.round(new Date().getTime() / 1000))
             config.headers.Authorization = token.tokenType + ' ' + token.accessToken;
